@@ -1,9 +1,13 @@
 FROM php:8.2-apache
 
-# 1. Install development packages and clean up apt cache.
+# 1. Install system dependencies for Laravel AND the GD extension, then clean up
 RUN apt-get update && apt-get install -y \
     unzip \
-    && docker-php-ext-install pdo bcmath \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) pdo bcmath gd \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Apache Configuration: Point to /public (important for Laravel)
@@ -21,10 +25,8 @@ WORKDIR /var/www/html
 # 5. Copy application source
 COPY . .
 
-# Set Composer memory limit to unlimited
+# 6. Set Composer memory limit to unlimited and install dependencies
 ENV COMPOSER_MEMORY_LIMIT=-1
-
-# Then run your install command
 RUN composer install --no-dev --optimize-autoloader
 
 # 7. Fix permissions
