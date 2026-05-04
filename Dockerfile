@@ -35,4 +35,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # 8. Expose port 80
 EXPOSE 80
 
-CMD php artisan config:clear && php artisan migrate --force && apache2-foreground
+CMD php artisan config:clear && php artisan storage:link && php artisan migrate --force && apache2-foreground

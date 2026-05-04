@@ -17,6 +17,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RpwsisAccomplishmentController;
 use App\Http\Controllers\DataTableImportController;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 
 // Authentication Routes
@@ -334,4 +336,28 @@ Route::middleware(['auth', 'check.active'])->group(function () {
 Route::get('/secret-migrate', function () {
     Artisan::call('migrate', ['--force' => true]);
     return 'Database migrated successfully!';
+});
+
+Route::get('/setup-admin', function () {
+    // 1. Check if this email already exists so it doesn't crash if you refresh the page
+    if (User::where('email', 'admin@nia.gov.ph')->exists()) {
+        return 'Admin already exists! Please log in.';
+    }
+
+    // 2. Create the user
+    User::create([
+        'name' => 'System Admin',
+        'email' => 'admin@nia.gov.ph',
+        'password' => Hash::make('pimoplanning'),
+        'role' => 'admin',
+        'email_verified_at' => now(),
+
+        // IMPORTANT: If your system uses a specific column to identify admins, add it here!
+        // For example, uncomment one of these if your database requires it:
+        // 'role' => 'admin',
+        // 'is_admin' => true,
+        // 'role_id' => 1,
+    ]);
+
+    return 'Admin user created successfully! You can now log in.';
 });
