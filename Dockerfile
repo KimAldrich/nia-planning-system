@@ -8,9 +8,8 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) pdo bcmath gd zip \
+    && docker-php-ext-install -j$(nproc) pdo bcmath gd zip pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
-
 # 2. Apache Configuration: Point to /public (important for Laravel)
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
