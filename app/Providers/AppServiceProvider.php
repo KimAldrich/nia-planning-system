@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\SystemNotificationService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // <-- 1. Added URL facade import here
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,9 +22,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // <-- 2. Added the HTTPS force fix for Render here
         if (env('APP_ENV') !== 'local') {
             URL::forceScheme('https');
         }
+
+        // Your existing notification logic below remains untouched
         View::composer('layouts.app', function ($view) {
             $summary = [
                 'enabled' => false,
